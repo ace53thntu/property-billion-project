@@ -27,6 +27,6 @@
     "dev": "ts-node-dev --respawn ./src/server.ts",
     "compile": "tsc",
     "start": "node dist/server.js",
-    "postinstall": "npm run compile"
+    "postinstall": "yarn run compile"
   }
 }
