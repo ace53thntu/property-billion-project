@@ -1,0 +1,23 @@
+{
+  "name": "property-billion-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ace53thntu/property-billion-project.git",
+  "author": "Em Dinh",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "clean": "lerna clean --yes && rimraf node_modules",
+    "dev:web": "yarn workspace @app/web dev",
+    "dev:admin": "yarn workspace @app/admin start"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "devDependencies": {
+    "lerna": "^3.22.1",
+    "rimraf": "^3.0.2"
+  }
+}
