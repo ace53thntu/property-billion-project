@@ -1,5 +1,8 @@
 import Hapi from "@hapi/hapi";
 
+/**
+ * route for check app status
+ */
 const statusPlugin: Hapi.Plugin<undefined> = {
   name: "@app/status",
   register: async function (server: Hapi.Server) {
