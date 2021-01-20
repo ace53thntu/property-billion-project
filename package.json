@@ -28,5 +28,8 @@
     "compile": "tsc",
     "start": "node dist/server.js",
     "postinstall": "yarn run compile"
+  },
+  "engines": {
+    "yarn": "1.x"
   }
 }
