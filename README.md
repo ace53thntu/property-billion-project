@@ -31,3 +31,8 @@ Run `web` source code:
 $ yarn dev:web
 ```
 Point your browser to `http://localhost:4000` to view the `web`
+
+
+### Staging
+- The `web` available on `https://property-web.vercel.app/`
+- The `admin` available on `https://property-admin.vercel.app/`
