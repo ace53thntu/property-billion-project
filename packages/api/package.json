@@ -18,16 +18,21 @@
     "@hapi/hapi": "^20.0.3",
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
+    "dotenv-safe": "^8.2.0",
     "hapi-auth-jwt2": "^10.2.0",
     "hapi-pino": "^8.3.0",
     "joi": "^17.3.0",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.5.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.30"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn ./src/server.ts",
+    "dev": "ts-node-dev --respawn ./src/index.ts",
+    "build": "tsc",
     "compile": "tsc",
-    "start": "node dist/server.js",
-    "postinstall": "yarn run compile"
+    "start": "node dist/index.js",
+    "postgres:start": "docker-compose up -d"
   },
   "engines": {
     "yarn": "1.x"
