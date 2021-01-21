@@ -10,8 +10,8 @@
     "clean": "lerna clean --yes && rimraf node_modules",
     "dev:web": "yarn workspace @app/web dev",
     "dev:admin": "yarn workspace @app/admin start",
-    "dev:api": "yarn workspace @app/api dev",
-    "start:api": "yarn workspace @app/api start"
+    "dev:server": "yarn workspace @app/server dev",
+    "start:server": "yarn workspace @app/server start"
   },
   "workspaces": {
     "packages": [
