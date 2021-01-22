@@ -1,15 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import {Roles} from "./Roles"
-import {Properties} from "./Properties"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from "typeorm";
+import { Roles } from "./Roles";
+import { Properties } from "./Properties";
+import { DateTime } from "./share/DateTime";
 
 enum Gender {
-  Male = 'male',
-  Female = 'female',
-  Other = 'other'
+  Male = "male",
+  Female = "female",
+  Other = "other",
 }
 
 @Entity()
-export class Users {
+export class Users extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -19,7 +26,7 @@ export class Users {
   @Column()
   lastName!: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createAt!: string;
 
   @Column()
@@ -49,9 +56,9 @@ export class Users {
   @Column()
   status!: boolean;
 
-  @ManyToOne(() => Roles, role => role.users)
+  @ManyToOne(() => Roles, (role) => role.users)
   role!: Roles;
-  
-  @OneToMany(() => Properties, property => property.user)
+
+  @OneToMany(() => Properties, (property) => property.user)
   properties!: Properties[];
 }

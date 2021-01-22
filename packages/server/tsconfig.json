@@ -69,5 +69,5 @@
     "newLine": "lf",
   },
   "exclude": ["dist", "tests"],
-  "include": ["./src/**/*.ts"]
+  "include": ["./src/**/*.ts", "ormconfig.ts"]
 }

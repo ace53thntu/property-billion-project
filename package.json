@@ -11,11 +11,19 @@
     "dev:web": "yarn workspace @app/web dev",
     "dev:admin": "yarn workspace @app/admin start",
     "dev:server": "yarn workspace @app/server dev",
-    "start:server": "yarn workspace @app/server start"
+    "start:server": "yarn workspace @app/server start",
+    "db:up": "yarn workspace @app/server db:up",
+    "db:down": "yarn workspace @app/server db:down"
   },
   "workspaces": {
     "packages": [
       "packages/*"
+    ],
+    "nohoist": [
+      "**/server",
+      "**/server/**",
+      "server",
+      "server/**"
     ]
   },
   "devDependencies": {

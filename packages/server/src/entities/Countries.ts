@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import {Provinces} from "./Provinces"
-
+import { Provinces } from "./Provinces";
+import { DateTime } from "./share/DateTime";
 @Entity()
-export class Countries {
+export class Countries extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -12,6 +12,6 @@ export class Countries {
   @Column()
   name!: string;
 
-  @OneToMany(() => Provinces, province => province.country)
+  @OneToMany(() => Provinces, (province) => province.country)
   provinces!: Provinces[];
 }
