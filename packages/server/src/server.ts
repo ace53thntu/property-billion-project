@@ -50,7 +50,6 @@ export async function createServer(): Promise<Hapi.Server> {
       logging: true,
       migrations: [path.join(__dirname, "./migrations/*")],
       entities: [path.join(__dirname, "./entities/*")],
-      schema: process.env.DATABASE_SCHEMA,
       synchronize: true,
     } as ConnectionOptions,
   });
