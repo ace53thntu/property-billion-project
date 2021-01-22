@@ -1,15 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import {Permissions} from "./Permissions"
-import {Roles} from "./Roles"
+import { Permissions } from "./Permissions";
+import { Roles } from "./Roles";
+import { DateTime } from "./share/DateTime";
 
 @Entity()
-export class PermissionsRoles {
+export class PermissionsRoles extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Permissions, permission => permission.permissionsRoles)
+  @ManyToOne(() => Permissions, (permission) => permission.permissionsRoles)
   permission!: Permissions[];
 
-  @ManyToOne(() => Roles, role => role.permissionsRoles)
+  @ManyToOne(() => Roles, (role) => role.permissionsRoles)
   role!: Roles[];
 }

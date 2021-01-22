@@ -3,11 +3,9 @@ import "dotenv-safe/config";
 import Hapi from "@hapi/hapi";
 import Boom from "@hapi/boom";
 import hapiPino from "hapi-pino";
-import path from "path";
-import { ConnectionOptions } from "typeorm";
 import { __prod__ } from "./constants";
-import statusPlugin from "./plugins/status";
 import dbPlugin from "./plugins/db";
+import statusPlugin from "./plugins/status";
 
 const server: Hapi.Server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -44,21 +42,9 @@ export async function createServer(): Promise<Hapi.Server> {
   // Register the database
   await server.register({
     plugin: dbPlugin,
-    options: {
-      type: "postgres",
-      // url: process.env.DATABASE_URL,
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DATABASE,
-      logging: true,
-      migrations: [path.join(__dirname, "./migrations/*")],
-      entities: [path.join(__dirname, "./entities/*")],
-      synchronize: true,
-    } as ConnectionOptions,
   });
 
+  // register routes
   await server.register([statusPlugin]);
 
   await server.initialize();

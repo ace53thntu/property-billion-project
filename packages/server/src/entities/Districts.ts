@@ -1,9 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import {Wards} from "./Wards"
-import {Provinces} from "./Provinces"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+} from "typeorm";
+import { Wards } from "./Wards";
+import { Provinces } from "./Provinces";
+import { DateTime } from "./share/DateTime";
 
 @Entity()
-export class Districts {
+export class Districts extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -13,9 +20,9 @@ export class Districts {
   @Column()
   name!: string;
 
-  @ManyToOne(() => Provinces, province => province.districts)
+  @ManyToOne(() => Provinces, (province) => province.districts)
   province!: Provinces;
 
-  @OneToMany(() => Wards, ward => ward.district)
+  @OneToMany(() => Wards, (ward) => ward.district)
   wards!: Wards[];
 }
