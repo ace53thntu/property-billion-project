@@ -8,7 +8,6 @@ import { ConnectionOptions } from "typeorm";
 import { __prod__ } from "./constants";
 import statusPlugin from "./plugins/status";
 import dbPlugin from "./plugins/db";
-import { User } from "./entities/User";
 
 const server: Hapi.Server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -50,7 +49,8 @@ export async function createServer(): Promise<Hapi.Server> {
       url: process.env.DATABASE_URL,
       logging: true,
       migrations: [path.join(__dirname, "./migrations/*")],
-      entities: [User],
+      entities: [path.join(__dirname, "./entities/*")],
+      schema: process.env.DATABASE_SCHEMA,
       synchronize: true,
     } as ConnectionOptions,
   });
