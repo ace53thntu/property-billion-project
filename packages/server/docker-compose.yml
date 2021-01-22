@@ -1,16 +1,41 @@
 version: "3.8"
 services:
   postgres:
-    image: postgres:10.3
-    restart: always
+    container_name: postgres_container
+    image: postgres
     environment:
-      - POSTGRES_DB=property
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASES=${POSTGRES_DATABASE},${POSTGRES_DATABASE_TEST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/data/postgres
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - ./scripts/pg-init.sh:/docker-entrypoint-initdb.d/pg-init.sh
+      - postgres-data:/data/postgres
     ports:
       - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin:/root/.pgadmin
+    ports:
+      - "5555:80"
+    depends_on:
+      - postgres
+    networks:
+      - postgres
+    restart: unless-stopped
 
 volumes:
+  postgres-data:
+  pgadmin:
+
+networks:
   postgres:
+    driver: bridge
