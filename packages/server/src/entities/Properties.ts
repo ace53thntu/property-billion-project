@@ -38,7 +38,7 @@ export class Properties extends DateTime {
   price!: number;
 
   @Column()
-  gender!: Status;
+  status!: Status;
 
   @Column({ type: "decimal", nullable: true })
   feeElectric!: number;

@@ -26,9 +26,6 @@ export class Users extends DateTime {
   @Column()
   lastName!: string;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  createAt!: string;
-
   @Column()
   phone!: string;
 
