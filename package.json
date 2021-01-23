@@ -13,7 +13,8 @@
     "dev:server": "yarn workspace @app/server dev",
     "start:server": "yarn workspace @app/server start",
     "db:up": "yarn workspace @app/server db:up",
-    "db:down": "yarn workspace @app/server db:down"
+    "db:down": "yarn workspace @app/server db:down",
+    "cm": "git-cz"
   },
   "workspaces": {
     "packages": [
@@ -27,6 +28,7 @@
     ]
   },
   "devDependencies": {
+    "git-cz": "^4.7.6",
     "lerna": "^3.22.1",
     "rimraf": "^3.0.2"
   }
