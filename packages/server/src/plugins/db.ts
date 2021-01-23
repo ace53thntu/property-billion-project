@@ -3,7 +3,7 @@ import {
   createConnection,
   Connection,
   ConnectionOptions,
-  getConnectionOptions,
+  // getConnectionOptions,
 } from "typeorm";
 
 // Module augmentation to add shared application state
@@ -18,9 +18,9 @@ declare module "@hapi/hapi" {
 const dbPlugin: Hapi.Plugin<ConnectionOptions> = {
   name: "@app/db",
   register: async function (server: Hapi.Server, options: ConnectionOptions) {
-    const connectionOptions = await getConnectionOptions();
-    const endOptions = Object.assign(connectionOptions, options);
-    const connection = await createConnection(endOptions);
+    // const connectionOptions = await getConnectionOptions();
+    // const endOptions = Object.assign(connectionOptions, options);
+    const connection = await createConnection(options);
     server.app.dbConnection = connection;
 
     // Close DB connection after the server's connection listeners are stopped

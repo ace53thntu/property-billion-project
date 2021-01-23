@@ -8,8 +8,11 @@ export class Roles extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  roleName!: string;
+  @Column({ nullable: false, unique: true })
+  name!: string;
+
+  @Column({ nullable: true })
+  description!: string;
 
   @OneToMany(() => Users, (user) => user.role)
   users!: Users[];

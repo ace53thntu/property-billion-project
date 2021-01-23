@@ -22,6 +22,7 @@ module.exports = {
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
     // turn on errors for missing imports
     "import/no-unresolved": "error",
+    "no-undef": "error",
   },
   settings: {
     "import/parsers": {

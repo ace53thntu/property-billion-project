@@ -8,6 +8,7 @@ import {
 import { Roles } from "./Roles";
 import { Properties } from "./Properties";
 import { DateTime } from "./share/DateTime";
+import { Tokens } from "./Tokens";
 
 enum Gender {
   Male = "male",
@@ -58,4 +59,7 @@ export class Users extends DateTime {
 
   @OneToMany(() => Properties, (property) => property.user)
   properties!: Properties[];
+
+  @OneToMany(() => Tokens, (token) => token.user)
+  tokens!: Tokens[];
 }
