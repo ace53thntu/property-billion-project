@@ -10,5 +10,8 @@ declare namespace NodeJS {
     POSTGRES_DATABASE_TEST: string;
     PGADMIN_DEFAULT_EMAIL: string;
     PGADMIN_DEFAULT_PASSWORD: string;
+    JWT_SECRET: string;
+    API_AUTH_STRATEGY: string;
+    JWT_ALGORITHM: string;
   }
 }
