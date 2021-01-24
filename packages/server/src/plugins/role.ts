@@ -126,13 +126,19 @@ async function createRoleHandler(
 ) {
   const rolesEntityRepo: Repository<RolesEntity> = getRepository(RolesEntity);
   const payload = request.payload as RoleInput;
-
+  let createdRole;
   try {
-    const role = rolesEntityRepo.create({
-      name: payload.name,
-      description: payload.description,
-    });
-    const createdRole = await rolesEntityRepo.save(role);
+    const result = await rolesEntityRepo
+      .createQueryBuilder()
+      .insert()
+      .values({
+        name: payload.name,
+        description: payload.description,
+      })
+      .returning("*")
+      .execute();
+
+    createdRole = result.raw[0];
 
     return h.response(createdRole).code(201);
   } catch (error) {
