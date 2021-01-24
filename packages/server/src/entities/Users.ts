@@ -4,11 +4,13 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { Roles } from "./Roles";
 import { Properties } from "./Properties";
 import { DateTime } from "./share/DateTime";
-import { Tokens } from "./Tokens";
+import { Sessions } from "./Sessions";
 
 enum Gender {
   Male = "male",
@@ -32,6 +34,9 @@ export class Users extends DateTime {
 
   @Column()
   email!: string;
+
+  @Column()
+  password!: string;
 
   @Column({ nullable: true })
   address1!: string;
@@ -60,6 +65,7 @@ export class Users extends DateTime {
   @OneToMany(() => Properties, (property) => property.user)
   properties!: Properties[];
 
-  @OneToMany(() => Tokens, (token) => token.user)
-  tokens!: Tokens[];
+  @OneToOne(() => Sessions, (session) => session.user)
+  @JoinColumn()
+  session!: Sessions;
 }

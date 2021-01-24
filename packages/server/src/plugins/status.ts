@@ -9,6 +9,9 @@ const statusPlugin: Hapi.Plugin<undefined> = {
     server.route({
       method: "GET",
       path: "/",
+      options: {
+        auth: false,
+      },
       handler: (_, h: Hapi.ResponseToolkit) =>
         h.response({ status: "ok" }).code(200),
     });
