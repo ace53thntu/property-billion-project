@@ -3,13 +3,14 @@ import "dotenv-safe/config";
 import Hapi from "@hapi/hapi";
 import Boom from "@hapi/boom";
 import hapiPino from "hapi-pino";
-// import hapiAuthJWT from "hapi-auth-jwt2";
+import hapiAuthJWT from "hapi-auth-jwt2";
 import path from "path";
 import { ConnectionOptions } from "typeorm";
 import { __prod__ } from "./constants";
 import dbPlugin from "./plugins/db";
 import statusPlugin from "./plugins/status";
 import rolesPlugin from "./plugins/role";
+import authPlugin from "./plugins/auth";
 
 const server: Hapi.Server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -61,7 +62,7 @@ export async function createServer(): Promise<Hapi.Server> {
   });
 
   // register routes
-  await server.register([statusPlugin, rolesPlugin]);
+  await server.register([statusPlugin, hapiAuthJWT, authPlugin, rolesPlugin]);
 
   await server.initialize();
 

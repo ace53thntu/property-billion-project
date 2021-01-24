@@ -8,15 +8,15 @@ import { PG_UNIQUE_VIOLATION } from "../utils/pgCode";
 
 const rolesPlugin: Hapi.Plugin<null> = {
   name: "@app/roles",
-  dependencies: ["@app/db"],
+  dependencies: ["@app/db", "@app/auth"],
   register: async function (server: Hapi.Server) {
     server.route([
       // Create role
       {
         method: "POST",
         path: "/roles",
+        handler: createRoleHandler,
         options: {
-          auth: false,
           validate: {
             payload: createRoleValidator,
             failAction: (_request, _h, err: Error | undefined) => {
@@ -25,14 +25,13 @@ const rolesPlugin: Hapi.Plugin<null> = {
             },
           },
         },
-        handler: createRoleHandler,
       },
       // Get roles
       {
         method: "GET",
         path: "/roles",
+        handler: getRolesHandler,
         options: {
-          auth: false,
           validate: {
             failAction: (_request, _h, err: Error | undefined) => {
               // show validation errors to user https://github.com/hapijs/hapi/issues/3706
@@ -40,14 +39,13 @@ const rolesPlugin: Hapi.Plugin<null> = {
             },
           },
         },
-        handler: getRolesHandler,
       },
       // Get role
       {
         method: "GET",
         path: "/roles/{roleId}",
+        handler: getRoleByIdHandler,
         options: {
-          auth: false,
           validate: {
             params: Joi.object({
               roleId: Joi.number().integer(),
@@ -58,14 +56,13 @@ const rolesPlugin: Hapi.Plugin<null> = {
             },
           },
         },
-        handler: getRoleByIdHandler,
       },
       // Update role
       {
         method: "PUT",
         path: "/roles/{roleId}",
+        handler: updateRoleHandler,
         options: {
-          auth: false,
           validate: {
             params: Joi.object({
               roleId: Joi.number().integer(),
@@ -77,14 +74,13 @@ const rolesPlugin: Hapi.Plugin<null> = {
             },
           },
         },
-        handler: updateRoleHandler,
       },
       // Delete role
       {
         method: "DELETE",
         path: "/roles/{roleId}",
+        handler: deleteRoleHandler,
         options: {
-          auth: false,
           validate: {
             params: Joi.object({
               roleId: Joi.number().integer(),
@@ -95,7 +91,6 @@ const rolesPlugin: Hapi.Plugin<null> = {
             },
           },
         },
-        handler: deleteRoleHandler,
       },
     ]);
   },
@@ -141,7 +136,7 @@ async function createRoleHandler(
 
     return h.response(createdRole).code(201);
   } catch (error) {
-    request.log("error", error);
+    request.log(["error", "role"], error);
     if (isQueryFailedError(error) && error?.code === PG_UNIQUE_VIOLATION) {
       return Boom.badRequest(`Role "name" already exists.`);
     }
@@ -161,7 +156,7 @@ async function getRolesHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
     const roles = await rolesEntityRepo.find();
     return h.response(roles).code(200);
   } catch (error) {
-    request.log("error", error);
+    request.log(["error", "role"], error);
     return Boom.badImplementation("Failed to get roles.");
   }
 }
@@ -185,7 +180,7 @@ async function getRoleByIdHandler(
     }
     return h.response(role).code(200);
   } catch (error) {
-    request.log("error", error);
+    request.log(["error", "role"], error);
 
     return Boom.badImplementation("Failed to get roles.");
   }
@@ -212,7 +207,7 @@ async function updateRoleHandler(
 
     return h.response(updatedRole).code(200);
   } catch (error) {
-    request.log("error", error);
+    request.log(["error", "role"], error);
     return Boom.badImplementation("Failed to get roles.");
   }
 }
@@ -241,7 +236,7 @@ async function deleteRoleHandler(
 
     return h.response().code(204);
   } catch (error) {
-    request.log("error", error);
+    request.log(["error", "role"], error);
     return Boom.badImplementation("Failed to get roles.");
   }
 }
