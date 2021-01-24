@@ -10,6 +10,5 @@ declare namespace NodeJS {
     PGADMIN_DEFAULT_EMAIL: string;
     PGADMIN_DEFAULT_PASSWORD: string;
     JWT_SECRET: string;
-    JWT_ALGORITHM: string;
   }
 }

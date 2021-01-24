@@ -1,17 +1,23 @@
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
-import Boom from "@hapi/boom";
+import Boom, { Boom as BoomType } from "@hapi/boom";
 import argon2 from "argon2";
-import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 import { Repository, getRepository } from "typeorm";
-// import { Tokens } from "../entities/Tokens";
 import { Users as UsersEntity } from "../entities/Users";
+import { Sessions as SessionsEntity } from "../entities/Sessions";
+import { createToken } from "../utils/createToken";
+import { EXPIRATION_PERIOD } from "../constants";
+
+export interface ISessions {
+  id: number;
+  key: string;
+  passwordHash: string;
+}
 
 declare module "@hapi/hapi" {
   interface AuthCredentials {
-    userId: number;
-    tokenId: number;
-    // isAdmin: boolean;
+    session: ISessions;
   }
 }
 
@@ -19,16 +25,51 @@ const authPlugin: Hapi.Plugin<null> = {
   name: "@app/auth",
   dependencies: ["@app/db", "hapi-auth-jwt2"],
   register: async function (server: Hapi.Server) {
-    if (!JWT_SECRET) {
+    if (!process.env.JWT_SECRET) {
       server.log(
         "warn",
         "The JWT_SECRET env var is not set. This is unsafe! If running in production, set it."
       );
     }
 
+    server.ext(
+      "onPostHandler",
+      (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+        const credentials = request.auth.credentials;
+
+        if (request.response instanceof BoomType) {
+          return h.continue;
+        }
+
+        // if the auth credentials contain session info (i.e. a refresh token), respond with a fresh set of tokens in the header.
+        if (credentials && credentials.session && request.response.header) {
+          request.response.header(
+            "X-Access-Token",
+            createToken(
+              credentials.user,
+              undefined,
+              EXPIRATION_PERIOD.SHORT,
+              request.log
+            )
+          );
+          request.response.header(
+            "X-Refresh-Token",
+            createToken(
+              undefined,
+              credentials.session,
+              EXPIRATION_PERIOD.LONG,
+              request.log
+            )
+          );
+        }
+
+        return h.continue;
+      }
+    );
+
     server.auth.strategy(API_AUTH_STRATEGY, "jwt", {
-      key: JWT_SECRET || "fdsmnfmnerkjwhriwjhrewj",
-      verifyOptions: { algorithms: [JWT_ALGORITHM] },
+      key: process.env.JWT_SECRET,
+      verifyOptions: { algorithms: ["HS256"], ignoreExpiration: true },
       validate: validateAPIToken,
     });
 
@@ -61,65 +102,123 @@ const authPlugin: Hapi.Plugin<null> = {
 export default authPlugin;
 
 export const API_AUTH_STRATEGY = "API";
-
-const JWT_SECRET = "fdgdgfgdf";
-const JWT_ALGORITHM = "HS256";
-interface APITokenPayload {
-  // tokenId: number;
-  userId: number;
-}
-
 interface LoginInput {
   email: string;
   password: string;
 }
 
-const apiTokenSchema = Joi.object({
-  // tokenId: Joi.number().integer().required(),
-  userId: Joi.number().integer().required(),
-});
+interface IUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  email: string;
+  password?: string;
+  address1?: string;
+  address2?: string;
+  gender?: string;
+  avatar?: string;
+  facebook: string;
+  zalo?: string;
+  status: boolean;
+}
 
-const validateAPIToken = async (
-  decode: APITokenPayload,
-  request: Hapi.Request
-) => {
-  const { userId } = decode;
-  const { error } = apiTokenSchema.validate(decode);
+interface IDecode {
+  iat: number;
+  exp: number;
+  user?: IUser;
+  sessionId?: number;
+  sessionKey?: string;
+  passwordHash?: string;
+}
 
-  if (error) {
-    request.log(["error", "auth"], `API token error: ${error.message}`);
-    return { isValid: false };
-  }
-
-  const usersEntityRepo: Repository<UsersEntity> = getRepository(UsersEntity);
-
+const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
   try {
-    const user = await usersEntityRepo.findOne(
-      { id: userId },
-      {
-        relations: ["tokens"],
+    // if the token is expired, respond with token type so the client can switch to refresh token if necessary
+    if (decode.exp < Math.floor(Date.now() / 1000)) {
+      if (decode.user) {
+        throw Boom.unauthorized("Expired Access Token");
+      } else {
+        throw Boom.unauthorized("Expired Refresh Token");
       }
-    );
-
-    if (!user) {
-      return { isValid: false, errorMessage: "Invalid token" };
     }
 
+    // If the token does not contain session info, then simply authenticate and continue
+    if (decode.user) {
+      return {
+        isValid: true,
+        credentials: {
+          user: {
+            ...decode.user,
+            password: "",
+          },
+          // scope: decode.scope,
+        },
+      };
+    }
+    // If the token does contain session info (i.e. a refresh token), then use the session to
+    // authenticate and respond with a fresh set of tokens in the header
+    else if (decode.sessionId) {
+      const sessionsEntityRepo: Repository<SessionsEntity> = getRepository(
+        SessionsEntity
+      );
+      const usersEntityRepo: Repository<UsersEntity> = getRepository(
+        UsersEntity
+      );
+
+      const session = await sessionsEntityRepo.findOne({
+        where: {
+          id: decode.sessionId,
+          key: decode.sessionKey,
+        },
+        relations: ["user"],
+      });
+
+      if (!session) {
+        return { isValid: false };
+      }
+
+      const user = await usersEntityRepo.findOne(session.user.id);
+
+      if (!user) {
+        return {
+          isValid: false,
+        };
+      }
+
+      if (user.password !== decode.passwordHash) {
+        return {
+          isValid: false,
+        };
+      }
+
+      return {
+        isValid: true,
+        credentials: {
+          user: {
+            ...user,
+            password: "",
+          },
+          session,
+          // scope: decode.scope,
+        },
+      };
+    }
     return {
-      isValid: true,
-      credentials: {
-        // userId: fetchedToken.user.id,
-      },
+      isValid: false,
     };
   } catch (error) {
-    request.log(["error", "auth", "db"], error);
-    return { isValid: false, errorMessage: "DB Error" };
+    request.log(["error", "auth"], error?.message);
+    return Boom.badImplementation(error?.message);
   }
 };
 
 async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
   const { email, password } = request.payload as LoginInput;
   const usersEntityRepo: Repository<UsersEntity> = getRepository(UsersEntity);
+  const sessionsEntityRepo: Repository<SessionsEntity> = getRepository(
+    SessionsEntity
+  );
 
   try {
     const user = await usersEntityRepo.findOne({
@@ -134,22 +233,76 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
       return Boom.unauthorized("Email or password invalid.");
     }
 
-    const token = generateAuthToken(user.id);
+    const accessToken = createToken(
+      {
+        ...user,
+        password: "",
+      },
+      undefined,
+      EXPIRATION_PERIOD.SHORT,
+      request.log
+    );
 
-    return h.response({ ...user, token }).code(200);
+    let refreshToken = "";
+
+    const existSession = await sessionsEntityRepo
+      .createQueryBuilder("session")
+      .where("session.userId = :userId", { userId: user.id })
+      .getOne();
+
+    if (!existSession) {
+      // create session
+      const session = await sessionsEntityRepo
+        .createQueryBuilder()
+        .insert()
+        .values({
+          user: user,
+          key: uuidv4(),
+          passwordHash: user.password,
+        })
+        .returning("*")
+        .execute();
+
+      user.session = session.raw[0];
+      await usersEntityRepo.save(user);
+      refreshToken = createToken(
+        undefined,
+        session.raw[0],
+        EXPIRATION_PERIOD.LONG,
+        request.log
+      );
+    } else {
+      const updatedSession = await sessionsEntityRepo
+        .createQueryBuilder()
+        .update()
+        .set({
+          key: uuidv4(),
+          passwordHash: user.password,
+        })
+        .where("userId = :userId", { userId: user.id })
+        .returning("*")
+        .execute();
+
+      refreshToken = createToken(
+        undefined,
+        updatedSession.raw[0],
+        EXPIRATION_PERIOD.LONG,
+        request.log
+      );
+    }
+
+    return h
+      .response({
+        user: {
+          ...user,
+          password: "",
+        },
+        accessToken,
+        refreshToken,
+      })
+      .code(200);
   } catch (error) {
     request.log(["error", "auth"], error);
     return Boom.badImplementation("Failed to get roles.");
   }
-}
-
-// Generate a signed JWT token with the tokenId in the payload
-function generateAuthToken(userId: number): string {
-  const jwtPayload = { userId };
-
-  return jwt.sign(jwtPayload, JWT_SECRET, {
-    algorithm: JWT_ALGORITHM,
-    // noTimestamp: true,
-    expiresIn: "1h",
-  });
 }

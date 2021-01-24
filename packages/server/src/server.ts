@@ -11,11 +11,15 @@ import dbPlugin from "./plugins/db";
 import statusPlugin from "./plugins/status";
 import rolesPlugin from "./plugins/role";
 import authPlugin from "./plugins/auth";
+import usersPlugin from "./plugins/user";
 
 const server: Hapi.Server = Hapi.server({
   port: process.env.PORT || 3000,
   host: process.env.HOST || "0.0.0.0", // docker don't know localhost,
   routes: {
+    cors: {
+      origin: ["*"],
+    },
     validate: {
       failAction: async (_request, _h, err?: Error): Promise<void> => {
         if (__prod__) {
@@ -62,7 +66,13 @@ export async function createServer(): Promise<Hapi.Server> {
   });
 
   // register routes
-  await server.register([statusPlugin, hapiAuthJWT, authPlugin, rolesPlugin]);
+  await server.register([
+    statusPlugin,
+    hapiAuthJWT,
+    authPlugin,
+    rolesPlugin,
+    usersPlugin,
+  ]);
 
   await server.initialize();
 

@@ -5,7 +5,6 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  JoinColumn,
 } from "typeorm";
 import { Roles } from "./Roles";
 import { Properties } from "./Properties";
@@ -29,10 +28,10 @@ export class Users extends DateTime {
   @Column()
   lastName!: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
   phone!: string;
 
-  @Column()
+  @Column({ unique: true })
   email!: string;
 
   @Column()
@@ -44,7 +43,7 @@ export class Users extends DateTime {
   @Column({ nullable: true })
   address2!: string;
 
-  @Column()
+  @Column({ default: Gender.Male })
   gender!: Gender;
 
   @Column({ nullable: true })
@@ -56,7 +55,7 @@ export class Users extends DateTime {
   @Column({ nullable: true })
   zalo!: string;
 
-  @Column()
+  @Column({ default: true })
   status!: boolean;
 
   @ManyToOne(() => Roles, (role) => role.users)
@@ -66,6 +65,5 @@ export class Users extends DateTime {
   properties!: Properties[];
 
   @OneToOne(() => Sessions, (session) => session.user)
-  @JoinColumn()
   session!: Sessions;
 }
