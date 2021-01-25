@@ -133,10 +133,6 @@ interface IDecode {
 }
 
 const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
-  console.log(
-    "🚀 ~ file: auth.ts ~ line 136 ~ validateAPIToken ~ decode",
-    decode
-  );
   try {
     // if the token is expired, respond with token type so the client can switch to refresh token if necessary
     if (decode.exp < Math.floor(Date.now() / 1000)) {
@@ -223,9 +219,11 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
   );
 
   try {
-    const user = await userEntityRepo.findOne({
-      email,
-    });
+    const user = await userEntityRepo
+      .createQueryBuilder("user")
+      .where("user.email = :email", { email })
+      .addSelect("user.password")
+      .getOne();
 
     if (!user) {
       return Boom.unauthorized("Email or password invalid.");
