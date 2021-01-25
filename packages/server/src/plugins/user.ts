@@ -19,11 +19,29 @@ const usersPlugin: Hapi.Plugin<null> = {
         handler: createUserHandler,
         options: {
           auth: false,
+          tags: ["api", "users"],
+          description: "Create a user.",
+          notes: "Return a user info.",
           validate: {
             payload: createUserValidator,
             failAction: (_request, _h, err: Error | undefined) => {
               // show validation errors to user https://github.com/hapijs/hapi/issues/3706
               throw err;
+            },
+          },
+          plugins: {
+            "hapi-swagger": {
+              responses: {
+                "201": {
+                  description: "User created.",
+                },
+                "400": {
+                  description: "Wrong body.",
+                },
+                "401": {
+                  description: "Please login.",
+                },
+              },
             },
           },
         },
@@ -47,18 +65,24 @@ interface UserInput {
 }
 
 const userInputValidator = Joi.object({
-  firstName: Joi.string().alter({
-    create: (schema) => schema.required(),
-    update: (schema) => schema.optional(),
-  }),
-  lastName: Joi.string().alter({
-    create: (schema) => schema.required(),
-    update: (schema) => schema.optional(),
-  }),
-  phone: Joi.string().alter({
-    create: (schema) => schema.optional(),
-    update: (schema) => schema.optional(),
-  }),
+  firstName: Joi.string()
+    .alter({
+      create: (schema) => schema.required(),
+      update: (schema) => schema.optional(),
+    })
+    .description("The first name of user."),
+  lastName: Joi.string()
+    .alter({
+      create: (schema) => schema.required(),
+      update: (schema) => schema.optional(),
+    })
+    .description("The last name of user."),
+  phone: Joi.string()
+    .alter({
+      create: (schema) => schema.optional(),
+      update: (schema) => schema.optional(),
+    })
+    .description("The phone number of user."),
   email: Joi.string()
     .email()
     .alter({
@@ -119,8 +143,7 @@ async function createUserHandler(
 
     return h.response(__omit(user, ["password"])).code(201);
   } catch (error) {
-    console.log("🚀 ~ file: user.ts ~ line 124 ~ error", error?.isBoom);
-    request.log(["error", "user"], error);
+    request.logger.error(["user"], error);
     if (isQueryFailedError(error) && error?.code === PG_UNIQUE_VIOLATION) {
       return Boom.badRequest(`"Email" already exists.`);
     }

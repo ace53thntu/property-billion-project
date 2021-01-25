@@ -12,6 +12,7 @@ import statusPlugin from "./plugins/status";
 import rolesPlugin from "./plugins/role";
 import authPlugin from "./plugins/auth";
 import usersPlugin from "./plugins/user";
+import swaggerPlugin from "./plugins/swagger";
 
 const server: Hapi.Server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -74,6 +75,7 @@ export async function createServer(): Promise<Hapi.Server> {
     authPlugin,
     rolesPlugin,
     usersPlugin,
+    swaggerPlugin,
   ]);
 
   await server.initialize();
