@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { PropertiesFeatures } from "./PropertiesFeatures";
+import { PropertyFeatureEntity } from "./PropertyFeature";
 import { DateTime } from "./share/DateTime";
 
-@Entity()
-export class Features extends DateTime {
+@Entity("feature")
+export class FeatureEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -13,6 +13,6 @@ export class Features extends DateTime {
   @Column({ nullable: true })
   description!: string;
 
-  @OneToMany(() => PropertiesFeatures, (ps) => ps.feature)
-  propertiesServices!: PropertiesFeatures[];
+  @OneToMany(() => PropertyFeatureEntity, (ps) => ps.feature)
+  propertyFeature!: PropertyFeatureEntity[];
 }

@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Properties } from "./Properties";
+import { PropertyEntity } from "./Property";
 import { DateTime } from "./share/DateTime";
 
-@Entity()
-export class Files extends DateTime {
+@Entity("file")
+export class FileEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -23,11 +23,11 @@ export class Files extends DateTime {
   size!: number;
 
   @Column({ nullable: true })
-  demension!: string;
+  dimension!: string;
 
   @Column()
   permissionId!: number;
 
-  @ManyToOne(() => Properties, (property) => property.files)
-  property!: Properties;
+  @ManyToOne(() => PropertyEntity, (property) => property.files)
+  property!: PropertyEntity;
 }

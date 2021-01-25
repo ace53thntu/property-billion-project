@@ -5,24 +5,35 @@ import {
   OneToMany,
   ManyToOne,
 } from "typeorm";
-import { Districts } from "./Districts";
-import { Properties } from "./Properties";
+import { DistrictEntity } from "./District";
+import { PropertyEntity } from "./Property";
 import { DateTime } from "./share/DateTime";
 
-@Entity()
-export class Wards extends DateTime {
+@Entity("wards")
+export class WardsEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({
+    comment: "Wards code.",
+    length: 20,
+  })
   code!: string;
 
-  @Column()
+  @Column({
+    comment: "Wards name.",
+    length: 100,
+  })
   name!: string;
 
-  @ManyToOne(() => Districts, (district) => district.wards)
-  district!: Districts;
+  /**
+   * Relation column
+   */
+  // Wards n - 1 District
+  @ManyToOne(() => DistrictEntity, (district) => district.wards)
+  district!: DistrictEntity;
 
-  @OneToMany(() => Properties, (property) => property.ward)
-  properties!: Properties[];
+  // Wards 1 - n Property
+  @OneToMany(() => PropertyEntity, (property) => property.ward)
+  properties!: PropertyEntity[];
 }

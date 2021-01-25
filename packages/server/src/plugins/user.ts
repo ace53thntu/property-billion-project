@@ -4,7 +4,7 @@ import Boom from "@hapi/boom";
 import argon2 from "argon2";
 import __omit from "lodash.omit";
 import { Repository, getRepository } from "typeorm";
-import { Users as UsersEntity } from "../entities/Users";
+import { UserEntity } from "../entities/User";
 import { isQueryFailedError } from "../utils/catchPgError";
 import { PG_NOT_NULL_VIOLATION, PG_UNIQUE_VIOLATION } from "../utils/pgCode";
 
@@ -121,13 +121,13 @@ async function createUserHandler(
   request: Hapi.Request,
   h: Hapi.ResponseToolkit
 ) {
-  const usersEntityRepo: Repository<UsersEntity> = getRepository(UsersEntity);
+  const userEntityRepo: Repository<UserEntity> = getRepository(UserEntity);
   const payload = request.payload as UserInput;
   const hashedPassword = await argon2.hash(payload.password);
   let user;
 
   try {
-    const result = await usersEntityRepo
+    const result = await userEntityRepo
       .createQueryBuilder()
       .insert()
       .values({

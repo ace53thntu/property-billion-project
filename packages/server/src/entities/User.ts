@@ -6,10 +6,10 @@ import {
   OneToMany,
   OneToOne,
 } from "typeorm";
-import { Roles } from "./Roles";
-import { Properties } from "./Properties";
+import { RoleEntity } from "./Role";
+import { PropertyEntity } from "./Property";
 import { DateTime } from "./share/DateTime";
-import { Sessions } from "./Sessions";
+import { SessionEntity } from "./Session";
 
 enum Gender {
   Male = "male",
@@ -17,8 +17,8 @@ enum Gender {
   Other = "other",
 }
 
-@Entity()
-export class Users extends DateTime {
+@Entity("user")
+export class UserEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -58,12 +58,12 @@ export class Users extends DateTime {
   @Column({ default: true })
   status!: boolean;
 
-  @ManyToOne(() => Roles, (role) => role.users)
-  role!: Roles;
+  @ManyToOne(() => RoleEntity, (role) => role.users)
+  role!: RoleEntity;
 
-  @OneToMany(() => Properties, (property) => property.user)
-  properties!: Properties[];
+  @OneToMany(() => PropertyEntity, (property) => property.user)
+  properties!: PropertyEntity[];
 
-  @OneToOne(() => Sessions, (session) => session.user)
-  session!: Sessions;
+  @OneToOne(() => SessionEntity, (session) => session.user)
+  session!: SessionEntity;
 }

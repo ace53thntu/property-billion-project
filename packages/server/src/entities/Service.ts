@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { PropertiesServices } from "./PropertiesServices";
+import { PropertyServiceEntity } from "./PropertyService";
 import { DateTime } from "./share/DateTime";
 
-@Entity()
-export class Services extends DateTime {
+@Entity("service")
+export class ServiceEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -13,6 +13,6 @@ export class Services extends DateTime {
   @Column({ nullable: true })
   description!: string;
 
-  @OneToMany(() => PropertiesServices, (ps) => ps.service)
-  propertiesServices!: PropertiesServices[];
+  @OneToMany(() => PropertyServiceEntity, (ps) => ps.service)
+  propertyService!: PropertyServiceEntity[];
 }

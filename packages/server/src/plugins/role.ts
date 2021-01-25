@@ -2,7 +2,7 @@ import Hapi from "@hapi/hapi";
 import Joi from "joi";
 import Boom from "@hapi/boom";
 import { Repository, getRepository } from "typeorm";
-import { Roles as RolesEntity } from "../entities/Roles";
+import { RoleEntity } from "../entities/Role";
 import { isQueryFailedError } from "../utils/catchPgError";
 import { PG_UNIQUE_VIOLATION } from "../utils/pgCode";
 
@@ -124,11 +124,11 @@ async function createRoleHandler(
   request: Hapi.Request,
   h: Hapi.ResponseToolkit
 ) {
-  const rolesEntityRepo: Repository<RolesEntity> = getRepository(RolesEntity);
+  const roleEntityRepo: Repository<RoleEntity> = getRepository(RoleEntity);
   const payload = request.payload as RoleInput;
   let createdRole;
   try {
-    const result = await rolesEntityRepo
+    const result = await roleEntityRepo
       .createQueryBuilder()
       .insert()
       .values({
@@ -156,10 +156,10 @@ async function createRoleHandler(
  * @param h
  */
 async function getRolesHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-  const rolesEntityRepo: Repository<RolesEntity> = getRepository(RolesEntity);
+  const roleEntityRepo: Repository<RoleEntity> = getRepository(RoleEntity);
 
   try {
-    const roles = await rolesEntityRepo.find();
+    const roles = await roleEntityRepo.find();
     return h.response(roles).code(200);
   } catch (error) {
     request.log(["error", "role"], error);
@@ -177,10 +177,10 @@ async function getRoleByIdHandler(
   h: Hapi.ResponseToolkit
 ) {
   const roleId = parseInt(request.params.roleId, 10);
-  const rolesEntityRepo: Repository<RolesEntity> = getRepository(RolesEntity);
+  const roleEntityRepo: Repository<RoleEntity> = getRepository(RoleEntity);
 
   try {
-    const role = await rolesEntityRepo.findOne(roleId);
+    const role = await roleEntityRepo.findOne(roleId);
     if (!role) {
       return Boom.notFound("Role not found.");
     }
@@ -201,15 +201,15 @@ async function updateRoleHandler(
 ) {
   const roleId = parseInt(request.params.roleId, 10);
   const payload = request.payload as Partial<RoleInput>;
-  const rolesEntityRepo: Repository<RolesEntity> = getRepository(RolesEntity);
+  const roleEntityRepo: Repository<RoleEntity> = getRepository(RoleEntity);
 
   try {
-    const role = await rolesEntityRepo.findOne(roleId);
+    const role = await roleEntityRepo.findOne(roleId);
     if (!role) {
       return Boom.notFound("Role not found.");
     }
     const updatedRole = Object.assign(role, payload);
-    await rolesEntityRepo.save(updatedRole);
+    await roleEntityRepo.save(updatedRole);
 
     return h.response(updatedRole).code(200);
   } catch (error) {
@@ -230,15 +230,15 @@ async function deleteRoleHandler(
   h: Hapi.ResponseToolkit
 ) {
   const roleId = parseInt(request.params.roleId, 10);
-  const rolesEntityRepo: Repository<RolesEntity> = getRepository(RolesEntity);
+  const roleEntityRepo: Repository<RoleEntity> = getRepository(RoleEntity);
 
   try {
-    const role = await rolesEntityRepo.findOne(roleId);
+    const role = await roleEntityRepo.findOne(roleId);
     if (!role) {
       return Boom.notFound("Role not found.");
     }
 
-    await rolesEntityRepo.delete(roleId);
+    await roleEntityRepo.delete(roleId);
 
     return h.response().code(204);
   } catch (error) {
