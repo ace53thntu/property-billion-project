@@ -70,16 +70,16 @@ export async function createServer(): Promise<Hapi.Server> {
 
   // register routes
   await server.register([
-    statusPlugin,
     hapiAuthJWT,
+    swaggerPlugin,
+    statusPlugin,
     authPlugin,
     rolesPlugin,
     usersPlugin,
-    swaggerPlugin,
   ]);
 
   await server.initialize();
-
+  // server.table().forEach()
   return server;
 }
 
