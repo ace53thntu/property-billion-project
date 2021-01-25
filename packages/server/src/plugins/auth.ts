@@ -4,8 +4,8 @@ import Boom, { Boom as BoomType } from "@hapi/boom";
 import argon2 from "argon2";
 import { v4 as uuidv4 } from "uuid";
 import { Repository, getRepository } from "typeorm";
-import { Users as UsersEntity } from "../entities/Users";
-import { Sessions as SessionsEntity } from "../entities/Sessions";
+import { UserEntity } from "../entities/User";
+import { SessionEntity } from "../entities/Session";
 import { createToken } from "../utils/createToken";
 import { EXPIRATION_PERIOD } from "../constants";
 
@@ -163,14 +163,12 @@ const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
     // If the token does contain session info (i.e. a refresh token), then use the session to
     // authenticate and respond with a fresh set of tokens in the header
     else if (decode.sessionId) {
-      const sessionsEntityRepo: Repository<SessionsEntity> = getRepository(
-        SessionsEntity
+      const sessionEntityRepo: Repository<SessionEntity> = getRepository(
+        SessionEntity
       );
-      const usersEntityRepo: Repository<UsersEntity> = getRepository(
-        UsersEntity
-      );
+      const userEntityRepo: Repository<UserEntity> = getRepository(UserEntity);
 
-      const session = await sessionsEntityRepo.findOne({
+      const session = await sessionEntityRepo.findOne({
         where: {
           id: decode.sessionId,
           key: decode.sessionKey,
@@ -182,7 +180,7 @@ const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
         return { isValid: false };
       }
 
-      const user = await usersEntityRepo.findOne(session.user.id);
+      const user = await userEntityRepo.findOne(session.user.id);
 
       if (!user) {
         return {
@@ -219,13 +217,13 @@ const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
 
 async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
   const { email, password } = request.payload as LoginInput;
-  const usersEntityRepo: Repository<UsersEntity> = getRepository(UsersEntity);
-  const sessionsEntityRepo: Repository<SessionsEntity> = getRepository(
-    SessionsEntity
+  const userEntityRepo: Repository<UserEntity> = getRepository(UserEntity);
+  const sessionEntityRepo: Repository<SessionEntity> = getRepository(
+    SessionEntity
   );
 
   try {
-    const user = await usersEntityRepo.findOne({
+    const user = await userEntityRepo.findOne({
       email,
     });
 
@@ -249,14 +247,14 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
 
     let refreshToken = "";
 
-    const existSession = await sessionsEntityRepo
+    const existSession = await sessionEntityRepo
       .createQueryBuilder("session")
       .where("session.userId = :userId", { userId: user.id })
       .getOne();
 
     if (!existSession) {
       // create session
-      const session = await sessionsEntityRepo
+      const session = await sessionEntityRepo
         .createQueryBuilder()
         .insert()
         .values({
@@ -268,7 +266,7 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         .execute();
 
       user.session = session.raw[0];
-      await usersEntityRepo.save(user);
+      await userEntityRepo.save(user);
       refreshToken = createToken(
         undefined,
         session.raw[0],
@@ -276,7 +274,7 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         request.log
       );
     } else {
-      const updatedSession = await sessionsEntityRepo
+      const updatedSession = await sessionEntityRepo
         .createQueryBuilder()
         .update()
         .set({

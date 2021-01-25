@@ -6,10 +6,10 @@ import {
   JoinColumn,
 } from "typeorm";
 import { DateTime } from "./share/DateTime";
-import { Users } from "./Users";
+import { UserEntity } from "./User";
 
-@Entity()
-export class Sessions extends DateTime {
+@Entity("session")
+export class SessionEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -19,10 +19,10 @@ export class Sessions extends DateTime {
   @Column({ comment: "User password." })
   passwordHash!: string;
 
-  @OneToOne(() => Users, (user) => user.session, {
+  @OneToOne(() => UserEntity, (user) => user.session, {
     eager: true,
     cascade: true,
   })
   @JoinColumn({ name: "userId" })
-  user!: Users;
+  user!: UserEntity;
 }
