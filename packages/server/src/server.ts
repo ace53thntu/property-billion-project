@@ -19,6 +19,8 @@ const server: Hapi.Server = Hapi.server({
   routes: {
     cors: {
       origin: ["*"],
+      additionalHeaders: ["X-Access-Token", "X-Refresh-Token"],
+      additionalExposedHeaders: ["X-Access-Token", "X-Refresh-Token"],
     },
     validate: {
       failAction: async (_request, _h, err?: Error): Promise<void> => {
