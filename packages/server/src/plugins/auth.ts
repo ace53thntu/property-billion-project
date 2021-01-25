@@ -133,6 +133,10 @@ interface IDecode {
 }
 
 const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
+  console.log(
+    "🚀 ~ file: auth.ts ~ line 136 ~ validateAPIToken ~ decode",
+    decode
+  );
   try {
     // if the token is expired, respond with token type so the client can switch to refresh token if necessary
     if (decode.exp < Math.floor(Date.now() / 1000)) {
