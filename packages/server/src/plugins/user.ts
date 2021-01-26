@@ -11,6 +11,22 @@ const usersPlugin: Hapi.Plugin<null> = {
   name: "@app/user",
   dependencies: ["@app/db"],
   register: async function (server: Hapi.Server) {
+    /**
+     * tạo 1 segment cache
+     */
+    const usersCache = server.cache({
+      cache: "redis-cache",
+      expiresIn: 60 * 1000,
+      segment: "users",
+      getDecoratedValue: true,
+    });
+
+    /**
+     * Gán vào server app để gọi
+     * ở controller
+     */
+    server.app.usersCache = usersCache;
+
     const userController = new UserController();
 
     server.route([

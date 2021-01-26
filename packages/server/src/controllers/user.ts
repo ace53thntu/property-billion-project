@@ -16,8 +16,25 @@ export class UserController {
     const userRepo = getCustomRepository(UserRepository);
 
     try {
+      // ví dụ về việc cache api value bằng redis
+      const { value, cached } = await request.server.app.usersCache.get(
+        "users"
+      );
+
+      if (value && cached) {
+        const lastModified = new Date(cached.stored);
+        return h
+          .response(value)
+          .code(200)
+          .header("Last-modified", lastModified.toUTCString());
+      }
       const users = await userRepo.find();
-      return h.response(users).code(200);
+      await request.server.app.usersCache.set("users", users);
+      const lastModified = new Date();
+      return h
+        .response(users)
+        .code(200)
+        .header("Last-modified", lastModified.toUTCString());
     } catch (error) {
       request.logger.error(["user"], error);
       return Boom.badImplementation("Failed to get users.");
