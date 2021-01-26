@@ -1,5 +1,6 @@
 version: "3.8"
 services:
+  # DB service
   postgres:
     container_name: postgres_container
     image: postgres
@@ -16,6 +17,8 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+
+  # Db admin service
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -32,9 +35,21 @@ services:
       - postgres
     restart: unless-stopped
 
+  # redis cache
+  redis:
+    container_name: redis_container
+    image: redis:latest
+    volumes:
+      - ./config/redis.conf:/redis.conf
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "/redis.conf"]
+
 volumes:
   postgres-data:
   pgadmin:
+  redis-data:
 
 networks:
   postgres:

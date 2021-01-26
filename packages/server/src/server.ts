@@ -5,6 +5,7 @@ import Boom from "@hapi/boom";
 import hapiPino from "hapi-pino";
 import hapiAuthJWT from "hapi-auth-jwt2";
 import path from "path";
+import CatboxRedis from "@hapi/catbox-redis";
 import { ConnectionOptions } from "typeorm";
 import { __prod__ } from "./constants";
 import dbPlugin from "./plugins/db";
@@ -13,6 +14,12 @@ import rolesPlugin from "./plugins/role";
 import authPlugin from "./plugins/auth";
 import usersPlugin from "./plugins/user";
 import swaggerPlugin from "./plugins/swagger";
+
+declare module "@hapi/hapi" {
+  interface ServerApplicationState {
+    usersCache: any;
+  }
+}
 
 const server: Hapi.Server = Hapi.server({
   port: process.env.PORT || 3000,
@@ -33,7 +40,22 @@ const server: Hapi.Server = Hapi.server({
         }
       },
     },
+    cache: {
+      privacy: "private",
+      expiresIn: 30 * 1000,
+    },
   },
+  cache: [
+    {
+      name: "redis-cache",
+      provider: {
+        constructor: CatboxRedis,
+        options: {
+          partition: "property-cache",
+        },
+      },
+    },
+  ],
 });
 
 export async function createServer(): Promise<Hapi.Server> {
