@@ -4,10 +4,8 @@ import argon2 from "argon2";
 import __omit from "lodash.omit";
 import { getCustomRepository } from "typeorm";
 import { UserRepository } from "../repositories/UserRepository";
-import { isQueryFailedError } from "../utils/catchPgError";
-import { PG_NOT_NULL_VIOLATION, PG_UNIQUE_VIOLATION } from "../utils/pgCode";
 import { IUserInput } from "../interfaces/IUserInput";
-
+import { errorHandler } from "../utils/errorUtil";
 export class UserController {
   /**
    * Handle get Users
@@ -37,7 +35,7 @@ export class UserController {
         .header("Last-modified", lastModified.toUTCString());
     } catch (error) {
       request.logger.error(["user"], error);
-      return Boom.badImplementation("Failed to get users.");
+      return errorHandler(error);
     }
   }
 
@@ -61,13 +59,7 @@ export class UserController {
       return h.response(__omit(user, ["password"])).code(201);
     } catch (error) {
       request.logger.error(["user"], error);
-      if (isQueryFailedError(error) && error?.code === PG_UNIQUE_VIOLATION) {
-        return Boom.badRequest(`"Email" already exists.`);
-      }
-      if (isQueryFailedError(error) && error?.code === PG_NOT_NULL_VIOLATION) {
-        return Boom.badRequest(error?.message);
-      }
-      return Boom.badImplementation("Failed to create user.");
+      return errorHandler(error);
     }
   }
 
@@ -86,7 +78,7 @@ export class UserController {
       return h.response(user).code(200);
     } catch (error) {
       request.log(["error", "role"], error);
-      return Boom.badImplementation("Failed to get user.");
+      return errorHandler(error);
     }
   }
 
@@ -106,7 +98,7 @@ export class UserController {
       return h.response().code(204);
     } catch (error) {
       request.log(["error", "role"], error);
-      return Boom.badImplementation("Failed to delete user.");
+      return errorHandler(error);
     }
   }
 
@@ -126,7 +118,7 @@ export class UserController {
       return h.response(updatedUser).code(200);
     } catch (error) {
       request.log(["error", "role"], error);
-      return Boom.badImplementation("Failed to update user.");
+      return errorHandler(error);
     }
   }
 }

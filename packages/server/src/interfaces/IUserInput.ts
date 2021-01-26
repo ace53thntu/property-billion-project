@@ -1,7 +1,7 @@
 export interface IUserInput {
   firstName: string;
   lastName: string;
-  phone?: string;
+  phone: string;
   email: string;
   status?: string;
   password: string;

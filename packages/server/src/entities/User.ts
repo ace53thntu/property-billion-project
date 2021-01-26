@@ -22,25 +22,29 @@ export class UserEntity extends DateTime {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({
+    length: 50,
+  })
   firstName!: string;
 
-  @Column()
+  @Column({
+    length: 50,
+  })
   lastName!: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true, length: 20 })
   phone!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, length: 20 })
   email!: string;
 
-  @Column({ select: false })
+  @Column({ select: false, length: 50 })
   password!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 100 })
   address1!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 100 })
   address2!: string;
 
   @Column({ default: Gender.Male })
