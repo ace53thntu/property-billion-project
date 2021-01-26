@@ -27,8 +27,20 @@ const server: Hapi.Server = Hapi.server({
   routes: {
     cors: {
       origin: ["*"],
-      additionalHeaders: ["X-Access-Token", "X-Refresh-Token"],
-      additionalExposedHeaders: ["X-Access-Token", "X-Refresh-Token"],
+      additionalHeaders: [
+        "X-Access-Token",
+        "X-Refresh-Token",
+        "x-rate-limit-limit",
+        "x-rate-limit-remaining",
+        "x-rate-limit-reset",
+      ],
+      additionalExposedHeaders: [
+        "X-Access-Token",
+        "X-Refresh-Token",
+        "x-rate-limit-limit",
+        "x-rate-limit-remaining",
+        "x-rate-limit-reset",
+      ],
     },
     validate: {
       failAction: async (_request, _h, err?: Error): Promise<void> => {
@@ -88,6 +100,16 @@ export async function createServer(): Promise<Hapi.Server> {
       migrations: [path.join(__dirname, "./migrations/*")],
       entities: [path.join(__dirname, "./entities/*")],
     } as ConnectionOptions,
+  });
+
+  await server.register({
+    plugin: require("hapi-rate-limitor"),
+    options: {
+      redis: {
+        port: 6379,
+        host: "127.0.0.1",
+      },
+    },
   });
 
   // register routes

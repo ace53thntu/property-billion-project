@@ -1947,7 +1947,7 @@
   dependencies:
     "@hapi/hoek" "9.x.x"
 
-"@hapi/boom@9.x.x", "@hapi/boom@^9.0.0", "@hapi/boom@^9.1.0", "@hapi/boom@^9.1.1":
+"@hapi/boom@9.x.x", "@hapi/boom@^9.0.0", "@hapi/boom@^9.1.0", "@hapi/boom@^9.1.1", "@hapi/boom@~9.1.0":
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/@hapi/boom/-/boom-9.1.1.tgz#89e6f0e01637c2a4228da0d113e8157c93677b04"
   integrity sha512-VNR8eDbBrOxBgbkddRYIe7+8DZ+vSbV6qlmaN2x7eWjsUjy2VmQgChkOKcVZIeupEZYj+I0dqNg430OhwzagjA==
@@ -3423,6 +3423,11 @@
   resolved "https://registry.yarnpkg.com/@sqltools/formatter/-/formatter-1.2.2.tgz#9390a8127c0dcba61ebd7fdcc748655e191bdd68"
   integrity sha512-/5O7Fq6Vnv8L6ucmPjaWbVG1XkP4FO+w5glqfkIsq3Xw4oyNAdJddbnYodNDAfjVUvo/rrSCTom4kAND7T1o5Q==
 
+"@supercharge/request-ip@~1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@supercharge/request-ip/-/request-ip-1.0.0.tgz#11e975772b71e6460b955153333e37ae08432ae8"
+  integrity sha512-9602+TvLqiUIgt1iomN0eZMlX7NsFu+MuUg6Y4AovgI9tX41kaxat3JnEjKWoFzBIgiTcEaXrd6UESImNVBYRA==
+
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@surma/rollup-plugin-off-main-thread/-/rollup-plugin-off-main-thread-1.4.2.tgz#e6786b6af5799f82f7ab3a82e53f6182d2b91a58"
@@ -4762,6 +4767,11 @@ async-limiter@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
+
+async-ratelimiter@~1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/async-ratelimiter/-/async-ratelimiter-1.2.8.tgz#36ae3381d5b88e931d571d2529b775837844adaf"
+  integrity sha512-6DcoWTptBIuVXLuqa93helQrF9bKRaGV9cvXUgSPNfMv6SHwnRrLTVW+9MlwhwxYIgraatSHJnEUjpA7mwyAww==
 
 async@^2.6.2:
   version "2.6.3"
@@ -8723,6 +8733,16 @@ hapi-pino@^8.3.0:
     pino "^6.0.0"
     pino-pretty "^4.0.0"
 
+hapi-rate-limitor@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/hapi-rate-limitor/-/hapi-rate-limitor-3.1.1.tgz#60ad5c624029f38e4843b01fd5b6dbbc1a7b7cca"
+  integrity sha512-l4TT6xrcGDdo/RwYVlIx4EGt4zqEoGowB9sgKgNE+4VvWgWWqRSxoDTyeq0YDvyR3MOa22c8Ss1FlFBNKxvclQ==
+  dependencies:
+    "@hapi/boom" "~9.1.0"
+    "@supercharge/request-ip" "~1.0.0"
+    async-ratelimiter "~1.2.8"
+    ioredis "~4.17.3"
+
 hapi-swagger@^14.1.0:
   version "14.1.0"
   resolved "https://registry.yarnpkg.com/hapi-swagger/-/hapi-swagger-14.1.0.tgz#e23242cf675445e543fc918b012e4c86df389363"
@@ -9367,6 +9387,21 @@ ioredis@4.x.x:
     lodash.flatten "^4.4.0"
     p-map "^2.1.0"
     redis-commands "1.6.0"
+    redis-errors "^1.2.0"
+    redis-parser "^3.0.0"
+    standard-as-callback "^2.0.1"
+
+ioredis@~4.17.3:
+  version "4.17.3"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.17.3.tgz#9938c60e4ca685f75326337177bdc2e73ae9c9dc"
+  integrity sha512-iRvq4BOYzNFkDnSyhx7cmJNOi1x/HWYe+A4VXHBu4qpwJaGT1Mp+D2bVGJntH9K/Z/GeOM/Nprb8gB3bmitz1Q==
+  dependencies:
+    cluster-key-slot "^1.1.0"
+    debug "^4.1.1"
+    denque "^1.1.0"
+    lodash.defaults "^4.2.0"
+    lodash.flatten "^4.4.0"
+    redis-commands "1.5.0"
     redis-errors "^1.2.0"
     redis-parser "^3.0.0"
     standard-as-callback "^2.0.1"
@@ -14162,6 +14197,11 @@ redent@^3.0.0:
   dependencies:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
+
+redis-commands@1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/redis-commands/-/redis-commands-1.5.0.tgz#80d2e20698fe688f227127ff9e5164a7dd17e785"
+  integrity sha512-6KxamqpZ468MeQC3bkWmCB1fp56XL64D4Kf0zJSwDZbVLLm7KFkoIcHrgRvQ+sk8dnhySs7+yBg94yIkAK7aJg==
 
 redis-commands@1.6.0:
   version "1.6.0"
