@@ -15,7 +15,7 @@ const userInputValidator = Joi.object({
     .description("The last name of user."),
   phone: Joi.string()
     .alter({
-      create: (schema) => schema.optional(),
+      create: (schema) => schema.required(),
       update: (schema) => schema.optional(),
     })
     .description("The phone number of user."),

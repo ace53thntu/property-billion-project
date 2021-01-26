@@ -22,6 +22,7 @@ export class BaseRepository<T>
       .createQueryBuilder()
       .insert()
       .values(data)
+      .returning("*")
       .execute()
       .then((result) => result.raw[0]);
   }
