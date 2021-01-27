@@ -13,6 +13,7 @@ import statusPlugin from "./plugins/status";
 import rolesPlugin from "./plugins/role";
 import authPlugin from "./plugins/auth";
 import usersPlugin from "./plugins/user";
+import propertiesPlugin from "./plugins/property";
 import swaggerPlugin from "./plugins/swagger";
 import rateLimitPlugin from "./plugins/rateLimit";
 import countriesPlugin from "./plugins/country";
@@ -105,6 +106,7 @@ export async function createServer(): Promise<Hapi.Server> {
     rolesPlugin,
     usersPlugin,
     countriesPlugin,
+    propertiesPlugin,
   ]);
 
   await server.initialize();
