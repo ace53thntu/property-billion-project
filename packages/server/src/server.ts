@@ -15,6 +15,7 @@ import authPlugin from "./plugins/auth";
 import usersPlugin from "./plugins/user";
 import swaggerPlugin from "./plugins/swagger";
 import rateLimitPlugin from "./plugins/rateLimit";
+import countriesPlugin from "./plugins/country";
 
 declare module "@hapi/hapi" {
   interface ServerApplicationState {
@@ -103,6 +104,7 @@ export async function createServer(): Promise<Hapi.Server> {
     authPlugin,
     rolesPlugin,
     usersPlugin,
+    countriesPlugin,
   ]);
 
   await server.initialize();
