@@ -30,6 +30,11 @@ export class AuditLogEntity extends DateTime {
   endpoint!: string;
 
   @Column({
+    nullable: true,
+  })
+  user!: string;
+
+  @Column({
     type: "json",
     nullable: true,
   })
@@ -58,6 +63,11 @@ export class AuditLogEntity extends DateTime {
   responseMessage!: string;
 
   @Column({
+    nullable: true,
+  })
+  entity!: string;
+
+  @Column({
     default: false,
     nullable: false,
   })
@@ -67,11 +77,6 @@ export class AuditLogEntity extends DateTime {
     nullable: true,
   })
   ipAddress!: string;
-
-  @Column({
-    nullable: true,
-  })
-  tableName!: string;
 
   @Column({
     nullable: true,
