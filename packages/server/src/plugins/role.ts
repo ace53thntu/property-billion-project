@@ -5,6 +5,7 @@ import { Repository, getRepository } from "typeorm";
 import { RoleEntity } from "../entities/Role";
 import { isQueryFailedError } from "../utils/catchPgError";
 import { PG_UNIQUE_VIOLATION } from "../utils/pgCode";
+import { logCreate } from "../policies/auditLog";
 
 const rolesPlugin: Hapi.Plugin<null> = {
   name: "@app/roles",
@@ -23,6 +24,9 @@ const rolesPlugin: Hapi.Plugin<null> = {
               // show validation errors to user https://github.com/hapijs/hapi/issues/3706
               throw err;
             },
+          },
+          plugins: {
+            policies: [logCreate("role")],
           },
         },
       },
