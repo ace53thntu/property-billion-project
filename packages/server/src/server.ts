@@ -17,10 +17,14 @@ import propertiesPlugin from "./plugins/property";
 import swaggerPlugin from "./plugins/swagger";
 import rateLimitPlugin from "./plugins/rateLimit";
 import countriesPlugin from "./plugins/country";
+import policiesPlugin from "./plugins/policy";
 
 declare module "@hapi/hapi" {
   interface ServerApplicationState {
     usersCache: any;
+  }
+  interface PluginSpecificConfiguration {
+    policies?: any;
   }
 }
 
@@ -93,8 +97,16 @@ export async function createServer(): Promise<Hapi.Server> {
     } as ConnectionOptions,
   });
 
+  // register rate limit
   await server.register({
     plugin: rateLimitPlugin,
+  });
+
+  await server.register({
+    plugin: policiesPlugin,
+    options: {
+      policyDirectory: path.join(__dirname, "/policies"),
+    },
   });
 
   // register routes

@@ -1,7 +1,7 @@
 import Hapi from "@hapi/hapi";
 import Boom from "@hapi/boom";
 import argon2 from "argon2";
-import __omit from "lodash.omit";
+import __omit from "lodash/omit";
 import { getCustomRepository } from "typeorm";
 import { UserRepository } from "../repositories/UserRepository";
 import { IUserInput } from "../interfaces/IUserInput";
@@ -46,7 +46,9 @@ export class UserController {
     request: Hapi.Request,
     h: Hapi.ResponseToolkit
   ) {
-    const userRepo = getCustomRepository(UserRepository);
+    const userRepo = request.server.app.dbConnection.getCustomRepository(
+      UserRepository
+    );
     const payload = request.payload as IUserInput;
     const hashedPassword = await argon2.hash(payload.password);
 

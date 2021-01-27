@@ -35,10 +35,10 @@ export class UserEntity extends DateTime {
   @Column({ unique: true, length: 20 })
   phone!: string;
 
-  @Column({ unique: true, length: 20 })
+  @Column({ unique: true, length: 50 })
   email!: string;
 
-  @Column({ select: false, length: 50 })
+  @Column({ select: false, length: 500 })
   password!: string;
 
   @Column({ nullable: true, length: 100 })

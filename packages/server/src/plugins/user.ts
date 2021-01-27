@@ -6,6 +6,7 @@ import {
   updateUserValidator,
   userParamsValidator,
 } from "../validations/user";
+import { logCreate } from "../policies/auditLog";
 
 const usersPlugin: Hapi.Plugin<null> = {
   name: "@app/user",
@@ -57,6 +58,7 @@ const usersPlugin: Hapi.Plugin<null> = {
                 },
               },
             },
+            policies: [logCreate("user")],
           },
         },
       },
