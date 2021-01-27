@@ -40,7 +40,7 @@ export class PropertyEntity extends DateTime {
   @Column()
   price!: number;
 
-  @Column()
+  @Column({ default: Status.AVAILABLE })
   status!: Status;
 
   @Column({ type: "decimal", nullable: true })
@@ -49,8 +49,8 @@ export class PropertyEntity extends DateTime {
   @Column({ type: "decimal", nullable: true })
   feeWater!: number;
 
-  @Column({ type: "decimal", nullable: true })
-  feeOther!: number;
+  @Column({ nullable: true })
+  feeOther!: string;
 
   @Column({ type: "timestamp", nullable: true })
   expiredAt!: string;
