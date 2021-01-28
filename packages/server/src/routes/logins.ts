@@ -3,7 +3,7 @@ import { LoginController } from "../controllers/login";
 import { failAction } from "../utils/failAction";
 import { loginInputValidator } from "../validations/login";
 
-const loginPlugin: Hapi.Plugin<null> = {
+const loginRoutes: Hapi.Plugin<null> = {
   name: "@app/login",
   register: async function (server: Hapi.Server) {
     const loginController = new LoginController();
@@ -25,4 +25,4 @@ const loginPlugin: Hapi.Plugin<null> = {
   },
 };
 
-export default loginPlugin;
+export default loginRoutes;

@@ -24,6 +24,10 @@ const swaggerPlugin: Hapi.Plugin<null> = {
             },
             tags: [
               {
+                name: "health",
+                description: "API for check app status.",
+              },
+              {
                 name: "auth",
                 description: "API auth interface.",
               },

@@ -8,7 +8,7 @@ import {
 } from "../validations/user";
 import { logCreate } from "../policies/auditLog";
 
-const usersPlugin: Hapi.Plugin<null> = {
+const userRoutes: Hapi.Plugin<null> = {
   name: "@app/user",
   register: async function (server: Hapi.Server) {
     /**
@@ -180,4 +180,4 @@ const usersPlugin: Hapi.Plugin<null> = {
   },
 };
 
-export default usersPlugin;
+export default userRoutes;
