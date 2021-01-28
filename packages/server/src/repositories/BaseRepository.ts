@@ -17,7 +17,7 @@ export class BaseRepository<T>
     return this.repository.findByIds(ids);
   }
 
-  async insert(data: any): Promise<T> {
+  insert(data: any): Promise<T> {
     return this.repository
       .createQueryBuilder()
       .insert()
@@ -25,6 +25,10 @@ export class BaseRepository<T>
       .returning("*")
       .execute()
       .then((result) => result.raw[0]);
+  }
+
+  save(data: any): Promise<T> {
+    return this.repository.save(data);
   }
 
   update(id: EntityId, data: any): Promise<T> {

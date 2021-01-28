@@ -6,6 +6,7 @@ import { getCustomRepository } from "typeorm";
 import { UserRepository } from "../repositories/UserRepository";
 import { IUserInput } from "../interfaces/IUserInput";
 import { errorHandler } from "../utils/errorUtil";
+
 export class UserController {
   /**
    * Handle get Users

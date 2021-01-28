@@ -1,13 +1,11 @@
 import Hapi from "@hapi/hapi";
-import Joi from "joi";
 import Boom, { Boom as BoomType } from "@hapi/boom";
-import argon2 from "argon2";
-import { v4 as uuidv4 } from "uuid";
 import { Repository, getRepository } from "typeorm";
 import { UserEntity } from "../entities/User";
 import { SessionEntity } from "../entities/Session";
 import { createToken } from "../utils/createToken";
 import { config as Config } from "../config";
+import { errorHandler } from "../utils/errorUtil";
 
 const {
   jwtSecret,
@@ -79,37 +77,10 @@ const authPlugin: Hapi.Plugin<null> = {
 
     // Require by default API token unless otherwise configured
     server.auth.default(AUTH_STRATEGIES);
-
-    server.route([
-      {
-        method: "POST",
-        path: "/login",
-        handler: loginHandler,
-        options: {
-          auth: false,
-          validate: {
-            failAction: (_request, _h, err) => {
-              // show validation errors to user https://github.com/hapijs/hapi/issues/3706
-              throw err;
-            },
-            payload: Joi.object({
-              email: Joi.string().email().required(),
-              password: Joi.string().required(),
-            }),
-          },
-        },
-      },
-    ]);
   },
 };
 
 export default authPlugin;
-
-interface LoginInput {
-  email: string;
-  password: string;
-}
-
 interface IUser {
   id: number;
   firstName: string;
@@ -210,102 +181,6 @@ const validateAPIToken = async (decode: IDecode, request: Hapi.Request) => {
     };
   } catch (error) {
     request.log(["error", "auth"], error?.message);
-    return Boom.badImplementation(error?.message);
+    return errorHandler(error);
   }
 };
-
-async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-  const { email, password } = request.payload as LoginInput;
-  const userEntityRepo: Repository<UserEntity> = getRepository(UserEntity);
-  const sessionEntityRepo: Repository<SessionEntity> = getRepository(
-    SessionEntity
-  );
-
-  try {
-    const user = await userEntityRepo
-      .createQueryBuilder("user")
-      .where("user.email = :email", { email })
-      .addSelect("user.password")
-      .getOne();
-
-    if (!user) {
-      return Boom.unauthorized("Email or password invalid.");
-    }
-    const valid = await argon2.verify(user.password, password);
-    if (!valid) {
-      return Boom.unauthorized("Email or password invalid.");
-    }
-
-    const accessToken = createToken(
-      {
-        ...user,
-        password: "",
-      },
-      undefined,
-      EXPIRATION_PERIOD.SHORT,
-      request.log
-    );
-
-    let refreshToken = "";
-
-    const existSession = await sessionEntityRepo
-      .createQueryBuilder("session")
-      .where("session.userId = :userId", { userId: user.id })
-      .getOne();
-
-    if (!existSession) {
-      // create session
-      const session = await sessionEntityRepo
-        .createQueryBuilder()
-        .insert()
-        .values({
-          user: user,
-          key: uuidv4(),
-          passwordHash: user.password,
-        })
-        .returning("*")
-        .execute();
-
-      user.session = session.raw[0];
-      await userEntityRepo.save(user);
-      refreshToken = createToken(
-        undefined,
-        session.raw[0],
-        EXPIRATION_PERIOD.LONG,
-        request.log
-      );
-    } else {
-      const updatedSession = await sessionEntityRepo
-        .createQueryBuilder()
-        .update()
-        .set({
-          key: uuidv4(),
-          passwordHash: user.password,
-        })
-        .where("userId = :userId", { userId: user.id })
-        .returning("*")
-        .execute();
-
-      refreshToken = createToken(
-        undefined,
-        updatedSession.raw[0],
-        EXPIRATION_PERIOD.LONG,
-        request.log
-      );
-    }
-
-    return h
-      .response({
-        user: {
-          ...user,
-          password: "",
-        },
-        accessToken,
-        refreshToken,
-      })
-      .code(200);
-  } catch (error) {
-    request.log(["error", "auth"], error);
-    return Boom.badImplementation("Failed to get roles.");
-  }
-}
