@@ -9,7 +9,6 @@ import {
 
 const propertyPlugin: Hapi.Plugin<null> = {
   name: "@app/property",
-  dependencies: ["@app/db", "@app/auth"],
   register: async function (server: Hapi.Server) {
     const propertyController = new PropertyController();
 

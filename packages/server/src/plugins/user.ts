@@ -10,7 +10,6 @@ import { logCreate } from "../policies/auditLog";
 
 const usersPlugin: Hapi.Plugin<null> = {
   name: "@app/user",
-  dependencies: ["@app/db"],
   register: async function (server: Hapi.Server) {
     /**
      * tạo 1 segment cache
