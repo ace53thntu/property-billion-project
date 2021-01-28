@@ -9,7 +9,6 @@ import { logCreate } from "../policies/auditLog";
 
 const rolesPlugin: Hapi.Plugin<null> = {
   name: "@app/roles",
-  dependencies: ["@app/db", "@app/auth"],
   register: async function (server: Hapi.Server) {
     server.route([
       // Create role

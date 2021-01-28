@@ -7,8 +7,12 @@ import { Repository, getRepository } from "typeorm";
 import { UserEntity } from "../entities/User";
 import { SessionEntity } from "../entities/Session";
 import { createToken } from "../utils/createToken";
-import { EXPIRATION_PERIOD } from "../constants";
+import { config as Config } from "../config";
 
+const {
+  jwtSecret,
+  constants: { EXPIRATION_PERIOD, AUTH_STRATEGIES },
+} = Config;
 export interface ISessions {
   id: number;
   key: string;
@@ -23,9 +27,9 @@ declare module "@hapi/hapi" {
 
 const authPlugin: Hapi.Plugin<null> = {
   name: "@app/auth",
-  dependencies: ["@app/db", "hapi-auth-jwt2"],
+  dependencies: ["hapi-auth-jwt2"],
   register: async function (server: Hapi.Server) {
-    if (!process.env.JWT_SECRET) {
+    if (!jwtSecret) {
       server.log(
         "warn",
         "The JWT_SECRET env var is not set. This is unsafe! If running in production, set it."
@@ -67,14 +71,14 @@ const authPlugin: Hapi.Plugin<null> = {
       }
     );
 
-    server.auth.strategy(API_AUTH_STRATEGY, "jwt", {
-      key: process.env.JWT_SECRET,
+    server.auth.strategy(AUTH_STRATEGIES, "jwt", {
+      key: jwtSecret,
       verifyOptions: { algorithms: ["HS256"], ignoreExpiration: true },
       validate: validateAPIToken,
     });
 
     // Require by default API token unless otherwise configured
-    server.auth.default(API_AUTH_STRATEGY);
+    server.auth.default(AUTH_STRATEGIES);
 
     server.route([
       {
@@ -101,7 +105,6 @@ const authPlugin: Hapi.Plugin<null> = {
 
 export default authPlugin;
 
-export const API_AUTH_STRATEGY = "API";
 interface LoginInput {
   email: string;
   password: string;

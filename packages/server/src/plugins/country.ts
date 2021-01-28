@@ -9,7 +9,6 @@ import { COUNTRIES_PATH } from "../config/country";
 
 const countriesPlugin: Hapi.Plugin<null> = {
   name: "@app/countries",
-  dependencies: ["@app/db", "@app/auth"],
   register: async function (server: Hapi.Server) {
     server.route([
       // Create Country
