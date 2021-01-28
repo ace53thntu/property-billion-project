@@ -10,6 +10,8 @@ export interface IBaseRepository<T> {
 
   insert(data: any): Promise<T>;
 
+  save(data: any): Promise<T>;
+
   update(id: EntityId, data: any): Promise<T>;
 
   delete(id: EntityId): Promise<DeleteResult>;

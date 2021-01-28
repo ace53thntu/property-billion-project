@@ -1,7 +1,7 @@
 import CatboxRedis from "@hapi/catbox-redis";
 import Boom from "@hapi/boom";
 import { ServerOptions } from "@hapi/hapi";
-import { __prod__ } from "../constants";
+import { __prod__ } from "./constants";
 
 export const server: ServerOptions = {
   port: process.env.PORT || 3000,

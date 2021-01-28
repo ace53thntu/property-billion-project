@@ -3,21 +3,22 @@ import Hapi from "@hapi/hapi";
 import hapiPino from "hapi-pino";
 import hapiAuthJWT from "hapi-auth-jwt2";
 import path from "path";
-import { __prod__ } from "./constants";
+import { __prod__ } from "./config/constants";
+import { config as Config } from "./config";
 
 // plugins
 import dbPlugin from "./plugins/db";
-import statusPlugin from "./plugins/status";
-import rolesPlugin from "./plugins/role";
-import authPlugin from "./plugins/auth";
-import usersPlugin from "./plugins/user";
-import propertiesPlugin from "./plugins/property";
 import swaggerPlugin from "./plugins/swagger";
 import rateLimitPlugin from "./plugins/rateLimit";
+import authPlugin from "./plugins/auth";
+// routes
+import statusPlugin from "./plugins/status";
+import rolesPlugin from "./plugins/role";
+import usersPlugin from "./plugins/user";
+import propertiesPlugin from "./plugins/property";
 import countriesPlugin from "./plugins/country";
 import policiesPlugin from "./plugins/policy";
-
-import { config as Config } from "./config";
+import loginPlugin from "./plugins/login";
 
 declare module "@hapi/hapi" {
   interface ServerApplicationState {
@@ -75,6 +76,7 @@ export async function createServer(): Promise<Hapi.Server> {
   // register routes
   await server.register([
     statusPlugin,
+    loginPlugin,
     rolesPlugin,
     usersPlugin,
     countriesPlugin,
