@@ -69,10 +69,6 @@
     // "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
     "resolveJsonModule": true,
     "newLine": "lf",
-    "typeRoots": [
-      "./typings",
-      "node_modules/@types"
-    ]
   },
   "exclude": ["dist", "tests"],
   "include": ["./src/**/*.ts"]

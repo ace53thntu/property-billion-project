@@ -13,7 +13,7 @@ const rateLimitPlugin: Hapi.Plugin<null> = {
         enable_offline_queue: false,
       }),
       keyPrefix: "@app/property-rateLimit",
-      points: 2,
+      points: 10,
       duration: 1,
       blockDuration: 60 * 30,
     });

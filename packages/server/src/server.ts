@@ -11,14 +11,16 @@ import dbPlugin from "./plugins/db";
 import swaggerPlugin from "./plugins/swagger";
 import rateLimitPlugin from "./plugins/rateLimit";
 import authPlugin from "./plugins/auth";
+
 // routes
-import statusPlugin from "./plugins/status";
-import rolesPlugin from "./plugins/role";
-import usersPlugin from "./plugins/user";
+import statusRoute from "./routes/status";
+import roleRoutes from "./routes/roles";
+import loginRoutes from "./routes/logins";
+import userRoutes from "./routes/users";
+
 import propertiesPlugin from "./plugins/property";
 import countriesPlugin from "./plugins/country";
 import policiesPlugin from "./plugins/policy";
-import loginPlugin from "./plugins/login";
 
 declare module "@hapi/hapi" {
   interface ServerApplicationState {
@@ -75,10 +77,10 @@ export async function createServer(): Promise<Hapi.Server> {
 
   // register routes
   await server.register([
-    statusPlugin,
-    loginPlugin,
-    rolesPlugin,
-    usersPlugin,
+    statusRoute,
+    loginRoutes,
+    roleRoutes,
+    userRoutes,
     countriesPlugin,
     propertiesPlugin,
   ]);
