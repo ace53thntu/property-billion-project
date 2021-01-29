@@ -1,6 +1,5 @@
-import Hapi from "@hapi/hapi";
+import Hapi, { RouteOptionsPreArray } from "@hapi/hapi";
 import Boom from "@hapi/boom";
-import argon2 from "argon2";
 import __omit from "lodash/omit";
 import { v4 as uuidv4 } from "uuid";
 import { getCustomRepository } from "typeorm";
@@ -10,30 +9,79 @@ import { LoginInput } from "../interfaces/ILogin";
 import { createToken } from "../utils/createToken";
 import { config as Config } from "../config";
 import { errorHandler } from "../utils/errorUtil";
+import { AuthAttemptRepository } from "../repositories/AuthAttemptRepository";
+import { getIP } from "../utils/getIP";
+import { UserEntity } from "../entities/User";
 
 export class LoginController {
+  static loginPre: RouteOptionsPreArray = [
+    {
+      assign: "abuseDetected",
+      method: async function (request: Hapi.Request, h: Hapi.ResponseToolkit) {
+        const authAttemptRepo = getCustomRepository(AuthAttemptRepository);
+        const { email } = request.payload as LoginInput;
+        const ip = getIP(request);
+
+        try {
+          const detected = await authAttemptRepo.abuseDetected(ip, email);
+          if (detected) {
+            return Boom.unauthorized(
+              "Maximum number of auth attempts reached. Please try again later."
+            );
+          }
+          return h.continue;
+        } catch (error) {
+          return errorHandler(error);
+        }
+      },
+    },
+    {
+      assign: "user",
+      method: async function (request: Hapi.Request) {
+        const { email, password } = request.payload as LoginInput;
+        const userRepo = getCustomRepository(UserRepository);
+
+        try {
+          const user = await userRepo.findByCredentials(email, password);
+
+          if (user) {
+            return user;
+          } else {
+            return false;
+          }
+        } catch (error) {
+          return errorHandler(error);
+        }
+      },
+    },
+    {
+      assign: "logAttempt",
+      method: async function (request: Hapi.Request, h: Hapi.ResponseToolkit) {
+        if (request.pre.user) {
+          return h.continue;
+        }
+
+        const { email } = request.payload as LoginInput;
+        const ip = getIP(request);
+        const authAttemptRepo = getCustomRepository(AuthAttemptRepository);
+
+        try {
+          await authAttemptRepo.createInstance(ip, email);
+          return Boom.unauthorized("Invalid Email or Password.");
+        } catch (error) {
+          return errorHandler(error);
+        }
+      },
+    },
+  ];
+
   public async loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-    const { email, password } = request.payload as LoginInput;
     const userRepo = getCustomRepository(UserRepository);
     const sessionRepo = getCustomRepository(SessionRepository);
 
+    const user = request.pre.user as UserEntity;
+
     try {
-      const user = await userRepo.findByEmailAndSelectPassword(email);
-      if (!user) {
-        return Boom.unauthorized("Email or password invalid.");
-      }
-
-      if (!user?.password?.length) {
-        return Boom.notFound("User not found.");
-      }
-      /**
-       * Verify user password
-       */
-      const valid = await argon2.verify(user.password, password);
-      if (!valid) {
-        return Boom.unauthorized("Email or password invalid.");
-      }
-
       const accessToken = createToken(
         __omit(user, ["password"]),
         undefined,

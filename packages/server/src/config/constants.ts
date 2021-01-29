@@ -8,6 +8,7 @@ export const constants = {
     FOR_IP: 50,
     FOR_IP_AND_USER: 5,
   },
+  LOCKOUT_PERIOD: 30, // in units of minutes
   API_TITLE: "Property API",
   AUTH_STRATEGIES: "API",
 };

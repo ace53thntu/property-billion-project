@@ -19,6 +19,7 @@ const loginRoutes: Hapi.Plugin<null> = {
             failAction: failAction,
             payload: loginInputValidator,
           },
+          pre: LoginController.loginPre,
         },
       },
     ]);
