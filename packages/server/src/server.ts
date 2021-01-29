@@ -19,7 +19,7 @@ import loginRoutes from "./routes/logins";
 import userRoutes from "./routes/users";
 
 import propertiesPlugin from "./plugins/property";
-import countriesPlugin from "./plugins/country";
+import countryRoutes from "./routes/country";
 import policiesPlugin from "./plugins/policy";
 
 declare module "@hapi/hapi" {
@@ -81,7 +81,7 @@ export async function createServer(): Promise<Hapi.Server> {
     loginRoutes,
     roleRoutes,
     userRoutes,
-    countriesPlugin,
+    countryRoutes,
     propertiesPlugin,
   ]);
 
