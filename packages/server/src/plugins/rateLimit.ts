@@ -2,20 +2,18 @@ import Hapi from "@hapi/hapi";
 import Redis from "redis";
 import Boom, { Boom as BoomType } from "@hapi/boom";
 import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
+import { Config } from "@config/index";
 
 const rateLimitPlugin: Hapi.Plugin<null> = {
   name: "@app/rateLimit",
   register: async function (server: Hapi.Server) {
     const rateLimiter = new RateLimiterRedis({
       storeClient: Redis.createClient({
-        host: "127.0.0.1",
-        port: 6379,
+        host: Config.redis.host,
+        port: Config.redis.port,
         enable_offline_queue: false,
       }),
-      keyPrefix: "@app/property-rateLimit",
-      points: 10,
-      duration: 1,
-      blockDuration: 60 * 30,
+      ...Config.rateLimit,
     });
 
     let limiter: RateLimiterRes;

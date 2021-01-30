@@ -3,7 +3,7 @@ import Dotenv from "dotenv-safe";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 Dotenv.config({
-  path: `.env.${process.env.NODE_ENV}`,
+  path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : ".env",
   allowEmptyValues: true,
 });
 

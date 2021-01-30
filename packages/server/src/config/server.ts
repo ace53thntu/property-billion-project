@@ -3,6 +3,7 @@ import Boom from "@hapi/boom";
 import { ServerOptions } from "@hapi/hapi";
 import Qs from "qs";
 import { __prod__ } from "./constants";
+import { Redis } from "./redis";
 
 export const server: ServerOptions = {
   port: process.env.PORT || 3000,
@@ -41,6 +42,8 @@ export const server: ServerOptions = {
         constructor: CatboxRedis,
         options: {
           partition: "property-cache",
+          host: Redis.host,
+          port: Redis.port,
         },
       },
     },

@@ -1,2 +1,2 @@
 dist/
-.env.development
+.env.development.local
