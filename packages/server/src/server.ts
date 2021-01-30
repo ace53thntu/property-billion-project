@@ -4,7 +4,7 @@ import hapiPino from "hapi-pino";
 import hapiAuthJWT from "hapi-auth-jwt2";
 import path from "path";
 import { __prod__ } from "./config/constants";
-import { config as Config } from "./config";
+import { Config } from "./config";
 
 // plugins
 import dbPlugin from "./plugins/db";

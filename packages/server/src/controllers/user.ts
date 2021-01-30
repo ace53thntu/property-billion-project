@@ -6,6 +6,9 @@ import { getCustomRepository } from "typeorm";
 import { UserRepository } from "../repositories/UserRepository";
 import { IUserInput } from "../interfaces/IUserInput";
 import { errorHandler } from "../utils/errorUtil";
+import { IQuery } from "@interfaces/IQuery";
+import { Constants } from "@config/constants";
+import { getUrl } from "@utils/getUrl";
 
 export class UserController {
   /**
@@ -14,10 +17,14 @@ export class UserController {
   public async getUsersHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
     const userRepo = getCustomRepository(UserRepository);
 
+    const { page, limit } = request.query as IQuery;
+    const currentPage = page || Constants.PAGINATION.DEFAULT_PAGE;
+    const currentLimit = limit || Constants.PAGINATION.DEFAULT_LIMIT;
+
     try {
       // ví dụ về việc cache api value bằng redis
       const { value, cached } = await request.server.app.usersCache.get(
-        "users"
+        `users?limit=${currentLimit}&page=${currentPage}`
       );
 
       if (value && cached) {
@@ -27,8 +34,17 @@ export class UserController {
           .code(200)
           .header("Last-modified", lastModified.toUTCString());
       }
-      const users = await userRepo.find();
-      await request.server.app.usersCache.set("users", users);
+
+      const route = getUrl(request);
+      const users = await userRepo.paginate({
+        page: currentPage,
+        limit: currentLimit,
+        route,
+      });
+      await request.server.app.usersCache.set(
+        `users?limit=${currentLimit}&page=${currentPage}`,
+        users
+      );
       const lastModified = new Date();
       return h
         .response(users)

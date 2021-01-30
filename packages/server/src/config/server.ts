@@ -1,11 +1,18 @@
 import CatboxRedis from "@hapi/catbox-redis";
 import Boom from "@hapi/boom";
 import { ServerOptions } from "@hapi/hapi";
+import Qs from "qs";
 import { __prod__ } from "./constants";
 
 export const server: ServerOptions = {
   port: process.env.PORT || 3000,
   host: process.env.HOST || "0.0.0.0",
+  query: {
+    parser: (raw: unknown) => {
+      const query = raw as string;
+      return Qs.parse(query);
+    },
+  },
   routes: {
     cors: {
       origin: ["*"],

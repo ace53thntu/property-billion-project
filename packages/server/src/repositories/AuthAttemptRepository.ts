@@ -1,7 +1,7 @@
 import { EntityRepository } from "typeorm";
 import { AuthAttemptEntity } from "../entities/AuthAttempt";
 import { BaseRepository } from "./BaseRepository";
-import { constants as Constants } from "../config/constants";
+import { Constants } from "../config/constants";
 
 @EntityRepository(AuthAttemptEntity)
 export class AuthAttemptRepository extends BaseRepository<AuthAttemptEntity> {

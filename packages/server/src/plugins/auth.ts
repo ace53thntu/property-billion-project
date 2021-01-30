@@ -4,7 +4,7 @@ import { Repository, getRepository } from "typeorm";
 import { UserEntity } from "../entities/User";
 import { SessionEntity } from "../entities/Session";
 import { createToken } from "../utils/createToken";
-import { config as Config } from "../config";
+import { Config } from "../config";
 import { errorHandler } from "../utils/errorUtil";
 
 const {
