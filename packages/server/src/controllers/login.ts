@@ -3,15 +3,15 @@ import Boom from "@hapi/boom";
 import __omit from "lodash/omit";
 import { v4 as uuidv4 } from "uuid";
 import { getCustomRepository } from "typeorm";
-import { UserRepository } from "../repositories/UserRepository";
-import { SessionRepository } from "../repositories/SessionRepository";
-import { LoginInput } from "../interfaces/ILogin";
-import { createToken } from "../utils/createToken";
-import { config as Config } from "../config";
-import { errorHandler } from "../utils/errorUtil";
-import { AuthAttemptRepository } from "../repositories/AuthAttemptRepository";
-import { getIP } from "../utils/getIP";
-import { UserEntity } from "../entities/User";
+import { UserEntity } from "@entities/User";
+import { getIP } from "@utils/getIP";
+import { AuthAttemptRepository } from "@repositories/AuthAttemptRepository";
+import { errorHandler } from "@utils/errorUtil";
+import { createToken } from "@utils/createToken";
+import { LoginInput } from "@interfaces/ILogin";
+import { SessionRepository } from "@repositories/SessionRepository";
+import { UserRepository } from "@repositories/UserRepository";
+import { Config } from "@config/index";
 
 export class LoginController {
   static loginPre: RouteOptionsPreArray = [

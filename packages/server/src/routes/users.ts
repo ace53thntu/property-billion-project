@@ -7,6 +7,7 @@ import {
   userParamsValidator,
 } from "../validations/user";
 import { logCreate } from "../policies/auditLog";
+import { queryValidator } from "@validations/common";
 
 const userRoutes: Hapi.Plugin<null> = {
   name: "@app/user",
@@ -72,6 +73,7 @@ const userRoutes: Hapi.Plugin<null> = {
           notes: "Return users info.",
           validate: {
             failAction,
+            query: queryValidator,
           },
           plugins: {
             "hapi-swagger": {
