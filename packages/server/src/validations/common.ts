@@ -7,6 +7,10 @@ export const queryValidator = Joi.object({
     .min(1)
     .max(100)
     .default(Constants.PAGINATION.DEFAULT_LIMIT),
+  page: Joi.number()
+    .integer()
+    .optional()
+    .default(Constants.PAGINATION.DEFAULT_PAGE),
 }).options({
   stripUnknown: true,
 });
