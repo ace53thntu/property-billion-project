@@ -45,6 +45,7 @@
     "@hapi/inert": "^6.0.3",
     "@hapi/vision": "^6.0.1",
     "argon2": "^0.27.1",
+    "chalk": "^4.1.0",
     "confidence": "^5.0.0",
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
@@ -63,7 +64,8 @@
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.30",
-    "uuid": "8.3.2"
+    "uuid": "8.3.2",
+    "winston": "^3.3.3"
   },
   "scripts": {
     "dev": "nodemon",

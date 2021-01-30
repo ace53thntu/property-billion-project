@@ -9,13 +9,20 @@ import { errorHandler } from "../utils/errorUtil";
 import { IQuery } from "@interfaces/IQuery";
 import { Constants } from "@config/constants";
 import { getUrl } from "@utils/getUrl";
+import { Logger } from "@utils/logger";
 
 export class UserController {
   /**
    * Handle get Users
    */
   public async getUsersHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-    const userRepo = getCustomRepository(UserRepository);
+    Logger.info(`GET - ${request.url.href}`, {
+      meta: {
+        ...request.query,
+      },
+    });
+
+    const userRepo = getCustomRepository<UserRepository>(UserRepository);
 
     const { page, limit } = request.query as IQuery;
     const currentPage = page || Constants.PAGINATION.DEFAULT_PAGE;

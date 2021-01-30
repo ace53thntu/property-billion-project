@@ -8,10 +8,13 @@ import {
 } from "../validations/user";
 import { logCreate } from "../policies/auditLog";
 import { queryValidator } from "@validations/common";
+import { Logger } from "@utils/logger";
 
 const userRoutes: Hapi.Plugin<null> = {
   name: "@app/user",
   register: async function (server: Hapi.Server) {
+    Logger.info("Registering - User routes");
+
     /**
      * tạo 1 segment cache
      */
